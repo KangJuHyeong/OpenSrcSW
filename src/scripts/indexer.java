@@ -15,7 +15,7 @@ import java.util.StringTokenizer;
 
 import org.jsoup.Jsoup;
 
-public class indexer implements Serializable {
+public class indexer implements Serializable{
 	private static String input_file;
 	private static String output_flie = "./index.post";
 	public indexer(String path) {
@@ -30,110 +30,103 @@ public class indexer implements Serializable {
 	}
 	
 	@SuppressWarnings({"rawtypes", "unchecked","nls"})
-	public void makepost() throws IOException, ClassNotFoundException{
+	public void makepost() throws IOException, ClassNotFoundException {
 		// TODO Auto-generated method stub
 		FileOutputStream fileStream =new FileOutputStream(output_flie);
-		ObjectOutputStream objectOutputStream =new ObjectOutputStream(fileStream);
-		
-		class AR implements Serializable{
-			int num;
-			double wxy;
-		}
+	      ObjectOutputStream objectOutputStream =new ObjectOutputStream(fileStream);
+	      
+	      
 
-		HashMap map = new HashMap<String, Object>();
-		HashMap[] fn = new HashMap[5];
-		for (int i = 0; i < 5; i++) {
-			fn[i] = new HashMap<String, String>();
-		}
+	      HashMap map = new HashMap<String, Object>();
+	      HashMap[] fn = new HashMap[5];
+	      for (int i = 0; i < 5; i++) {
+	         fn[i] = new HashMap<String, String>();
+	      }
 
-		File br = new File(input_file);
-		org.jsoup.nodes.Document html = Jsoup.parse(br, "UTF-8");
+	      File br = new File(input_file);
+	      org.jsoup.nodes.Document html = Jsoup.parse(br, "UTF-8");
 
-		for (int i = 0; i < html.select("title").size(); i++) {
+	      for (int i = 0; i < html.select("title").size(); i++) {
 
-			org.jsoup.select.Elements a = html.select("docs doc#" + i); // doc id로 본문 접근
-			String wr = a.text();
+	         org.jsoup.select.Elements a = html.select("docs doc#" + i); // doc id로 본문 접근
+	         String wr = a.text();
 
-			StringTokenizer st = new StringTokenizer(wr, " ");
-			String titleData = st.nextToken(); // title 데이터 추출
-			String bodyData = wr.substring(titleData.length()); // body 데이터 추출
-			bodyData = bodyData.trim();
+	         StringTokenizer st = new StringTokenizer(wr, " ");
+	         String titleData = st.nextToken(); // title 데이터 추출
+	         String bodyData = wr.substring(titleData.length()); // body 데이터 추출
+	         bodyData = bodyData.trim();
 
-			StringTokenizer st1 = new StringTokenizer(bodyData, "#");
-			while (st1.hasMoreTokens()) {
-				String ss = st1.nextToken();
-				StringTokenizer st2 = new StringTokenizer(ss, ":");
-				String key = st2.nextToken();
-				String value = st2.nextToken();
-				fn[i].put(key, value);
-			}
+	         StringTokenizer st1 = new StringTokenizer(bodyData, "#");
+	         while (st1.hasMoreTokens()) {
+	            String ss = st1.nextToken();
+	            StringTokenizer st2 = new StringTokenizer(ss, ":");
+	            String key = st2.nextToken();
+	            String value = st2.nextToken();
+	            fn[i].put(key, value);
+	         }
 
-		}
-		//
+	      }
+	      //
 
-		for (int i = 0; i < 5; i++) {
-			Iterator<String> keys = fn[i].keySet().iterator();
-			while (keys.hasNext()) {
-				String key = keys.next();
-				String value = (String) fn[i].get(key);
-				int tfxy = Integer.parseInt(value);
-				int dfx = 0;
-				for (int j = 0; j < 5; j++) {
-					if (fn[j].get(key) != null) {
-						dfx++;
-					}
-				}
+	      for (int i = 0; i < 5; i++) {
+	         Iterator<String> keys = fn[i].keySet().iterator();
+	         while (keys.hasNext()) {
+	            String key = keys.next();
+	            String value = (String) fn[i].get(key);
+	            int tfxy = Integer.parseInt(value);
+	            int dfx = 0;
+	            for (int j = 0; j < 5; j++) {
+	               if (fn[j].get(key) != null) {
+	                  dfx++;
+	               }
+	            }
 
-				if (map.containsKey(key)) {
+	            if (map.containsKey(key)) {
 
-					double wx = tfxy * (Math.log(5.0 / dfx));
-					((ArrayList<AR>) map.get(key)).get(i).wxy += wx;
+	               double wx = tfxy * (Math.log(5.0 / dfx));
+	               ((ArrayList) map.get(key)).set(i,wx);
+	               
+	            } else {
+	               List lli=new ArrayList(5);
+	               for(int j=0;j<5;j++)
+	               lli.add(0.0);
+	               map.put(key, lli);
+	               double wx = tfxy * (Math.log(5.0 / dfx));
+	               ((ArrayList) map.get(key)).set(i,wx);
 
-				} else {
+	            }
 
-					List<AR> list = new ArrayList<AR>();
-					for (int k = 0; k < 5; k++) {
-						AR r = new AR();
-						r.num = k;
-						r.wxy = 0.0;
-						list.add(r);
-					}
-					map.put(key, list);
-					double wx = tfxy * (Math.log(5.0 / dfx));
-					((ArrayList<AR>) map.get(key)).get(i).wxy += wx;
+	         }
 
-				}
+	      }
+	      //파일 쓰기
+	      objectOutputStream.writeObject(map);
+	      objectOutputStream.close();
+	      
+	      
 
-			}
+	      //파일읽기
+	      FileInputStream FS=new FileInputStream(output_flie);
+	      ObjectInputStream obj= new ObjectInputStream(FS);
+	   
+	      Object object=obj.readObject();
+	      obj.close();
+	      
+	      System.out.println("읽어온 객체의 type:"+object.getClass());
+	      
+	      HashMap hash= (HashMap) object;
+	      
+	      Iterator<String> itr = hash.keySet().iterator();
+	      while (itr.hasNext()) {
+	         String key = itr.next();
+	         ArrayList arrr = (ArrayList) hash.get(key);
+	         System.out.print(key+"->");
+	         for (int i = 0; i < 5; i++) {            
+	            System.out.print(i+" "+String.format("%.2f", arrr.get(i))+" ");
+	         }
+	         System.out.println();
+	      }
 
-		}
-		//파일 쓰기
-		objectOutputStream.writeObject(map);
-		objectOutputStream.close();
-		
-		
-
-		//파일읽기
-		FileInputStream FS=new FileInputStream(output_flie);
-		ObjectInputStream obj= new ObjectInputStream(FS);
-	
-		Object object=obj.readObject();
-		obj.close();
-		
-		System.out.println("읽어온 객체의 type:"+object.getClass());
-		
-		HashMap hash= (HashMap) object;
-		
-		Iterator<String> itr = map.keySet().iterator();
-		while (itr.hasNext()) {
-			String key = itr.next();
-			ArrayList<AR> arrr = (ArrayList<AR>) map.get(key);
-			System.out.print(key+"->");
-			for (int i = 0; i < 5; i++) {				
-				System.out.print(i+" "+String.format("%.2f", arrr.get(i).wxy)+" ");
-			}
-			System.out.println();
-		}
 		System.out.println("4주차 실행완료");
 	}
 }

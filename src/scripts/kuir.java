@@ -13,7 +13,8 @@ public class kuir {
 		
 		String command = args[0];   
 		String path = args[1];
-
+		String command2 =args[2];
+		String query=args[3];
 		if(command.equals("-c")) {
 			makeCollection collection = new makeCollection(path);
 			collection.makeXml();
@@ -23,8 +24,12 @@ public class kuir {
 			keyword.convertXml();
 		}
 		else if(command.equals("-i")) {
-			indexer keyword = new indexer(path);
-			keyword.makepost();;
+			indexer index = new indexer(path);
+			index.makepost();
+		}
+		else if(command.equals("-s")) {
+			searcher search = new searcher(path,query);
+			search.srch();
 		}
 	}
 }

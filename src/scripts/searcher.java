@@ -31,7 +31,7 @@ public class searcher {
 	 @SuppressWarnings({ "rawtypes", "unchecked", "nls" })
 	public void srch() throws IOException, ClassNotFoundException{
 		// TODO Auto-generated method stub
-		 FileInputStream FS = new FileInputStream(input_file);
+		FileInputStream FS = new FileInputStream(input_file);
 	      ObjectInputStream obj = new ObjectInputStream(FS);
 
 	      Object object = obj.readObject();
@@ -51,22 +51,23 @@ public class searcher {
 
 	      KeywordExtractor ke = new KeywordExtractor();
 	      KeywordList k1 = ke.extractKeyword(qry, true);
-
+	      
 	      for (int j = 0; j < k1.size(); j++) {
 	         Keyword kwrd = k1.get(j);
 	         map.put(kwrd.getString(), kwrd.getCnt());
 	      }
-
 	      Iterator<String> ii = map.keySet().iterator();
 	      while (ii.hasNext()) {
 	         String key = ii.next();
 	         int tf = (int) map.get(key);
 	         ArrayList arr = (ArrayList) hash.get(key);
+	         if(arr!=null)
 	         for (int i = 0; i < 5; i++) {
 	            id[i] += tf * (double) arr.get(i);
 	         }
 	      }
-
+	      
+	 
 	      //search and output
 	      Double[] ab = { id[0], id[1], id[2], id[3], id[4] };
 	      int[] st = { -1, -1, -1, -1, -1 };
@@ -85,7 +86,9 @@ public class searcher {
 	               st[i] = 2;
 	         } 
 	      }
+	      
 
+	      
 	      for (int i = 0; i < 5; i++) {
 	         if (st[i] == 0) {
 	            System.out.println("첫번째:" + fl[i]);
@@ -98,8 +101,11 @@ public class searcher {
 	      }
 	      for (int i = 0; i < 5; i++) {
 	         if (st[i] == 2) {
-	            System.out.println("세번째" + fl[i]);
+	            System.out.println("세번째:" + fl[i]);
 	         }
+	      }
+	      if(ab[0]==0) {
+	    	  System.out.println("검색 된 결과 값이 없습니다.");
 	      }
 	      System.out.println("5주차 실행완료");
 

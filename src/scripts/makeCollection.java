@@ -16,8 +16,13 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.jsoup.Jsoup;
+import org.snu.ids.kkma.index.Keyword;
+import org.snu.ids.kkma.index.KeywordExtractor;
+import org.snu.ids.kkma.index.KeywordList;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+
 
 public class makeCollection{
 	static private String data_path;

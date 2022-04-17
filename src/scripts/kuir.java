@@ -13,7 +13,6 @@ public class kuir {
 		String path = args[1];
 		String command2 =args[2];
 		String query=args[3];
-
 		if(command.equals("-c")) {
 			makeCollection collection = new makeCollection(path);
 			collection.makeXml();
